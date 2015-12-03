@@ -37,7 +37,7 @@ struct WebServiceManager {
     
     
     func fetchForecasts(callback : ([Weather]) -> Void){
-        let url = NSURL(string: "http://api.openweathermap.org/data/2.5/forecast?q=Atlanta&mode=json&APPID=1d04e62091eabb4695bb6e9993976418")
+        let url = NSURL(string: "http://api.openweathermap.org/data/2.5/forecast/daily?q=Atlanta&mode=json&cnt=7&APPID=1d04e62091eabb4695bb6e9993976418")
         let request = NSURLRequest(URL: url!)
         
         let session = NSURLSession.sharedSession()
