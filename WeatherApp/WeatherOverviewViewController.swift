@@ -10,15 +10,32 @@ import UIKit
 
 class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
     
-    var forecasts : [Forecast]?
+    var forecasts : [Weather]?
+    var todayWeather : Weather?
     
+    @IBOutlet weak var dayIconImageView: UIImageView!
+    
+    @IBOutlet weak var dayDateLabel: UILabel!
+    @IBOutlet weak var dayDescLabel: UILabel!
+    @IBOutlet weak var dayLowTempLabel: UILabel!
+    @IBOutlet weak var dayHighTempLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.forecasts = DataManager.sharedManager.loadWeather()
+        self.forecasts = DataManager.sharedManager.loadForecasts()
         self.tableView.dataSource = self
+        let wsm = WebServiceManager()
+        wsm.fetchForecasts{(newForecasts) -> Void in
+            self.forecasts = [Weather]()
+            for forecast in newForecasts{
+                self.forecasts?.append(forecast)
+            }
+        }
+        wsm.fetchWeather({(newWeather) -> Void in
+            self.todayWeather = newWeather
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,11 +50,16 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let forecast = self.forecasts![indexPath.row]
         
-        let cell = UITableViewCell()
+        if let cell = tableView.dequeueReusableCellWithIdentifier("forecastCellReuseID", forIndexPath: indexPath) as? ForecastTableViewCell{
+            cell.cellDayLabel.text = forecast.day
+            cell.cellDescLabel.text = forecast.desc
+            cell.cellHighTempLabel.text = "\(forecast.highTemp!)º"
+            cell.cellLowTempLabel.text = "\(forecast.lowTemp!)º"
+            cell.cellIconImageView.image = UIImage(named: forecast.icon!)
+            
+        }
         
-        cell.textLabel?.text = "\(forecast.day!)"
-        
-        return cell
+        return UITableViewCell()
     }
 
     /*
