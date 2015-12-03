@@ -11,8 +11,8 @@ import Foundation
 
 struct Weather {
     var icon : String?
-    var highTemp : Int?
-    var lowTemp : Int?
+    var highTemp : Float?
+    var lowTemp : Float?
     var desc : String?
     var day : String?
 }

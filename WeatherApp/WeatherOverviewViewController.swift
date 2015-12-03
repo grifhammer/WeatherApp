@@ -24,7 +24,6 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.forecasts = DataManager.sharedManager.loadForecasts()
         self.tableView.dataSource = self
         let wsm = WebServiceManager()
         wsm.fetchForecasts{(newForecasts) -> Void in
@@ -44,7 +43,12 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (self.forecasts?.count)!
+        if let count = self.forecasts?.count{
+            return count
+        }
+        else {
+            return 0
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
