@@ -11,7 +11,7 @@ import Foundation
 struct WebServiceManager {
     
     
-    private func parseWeather(jsonDict : [String : AnyObject] ) -> Weather{
+    private func parseForecast(jsonDict : [String : AnyObject] ) -> Weather{
         var newWeather = Weather()
         if let tempDict = jsonDict["temp"] as? [ String: AnyObject ]{
             newWeather.highTemp = tempDict["max"] as? Float
@@ -20,9 +20,31 @@ struct WebServiceManager {
             newWeather.highTemp = 110
             newWeather.lowTemp = 10
         }
-        print(jsonDict)
         if let weatherDict = jsonDict["weather"] as? [[ String : AnyObject ]]{
-            newWeather.desc = weatherDict[0]["description"] as? String
+            newWeather.desc = weatherDict[0]["main"] as? String
+            newWeather.icon = weatherDict[0]["icon"] as? String
+        }
+        if let timeResult = (jsonDict["dt"] as? Double) {
+            let dateObj = NSDate(timeIntervalSince1970: timeResult)
+            let dateFormatter : NSDateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "MMM dd"
+            newWeather.day = dateFormatter.stringFromDate(dateObj)
+        }
+        return newWeather
+        
+    }
+    
+    private func parseWeather(jsonDict : [String : AnyObject] ) -> Weather {
+        var newWeather = Weather()
+        if let tempDict = jsonDict["main"] as? [ String: AnyObject ]{
+            newWeather.highTemp = tempDict["temp_max"] as? Float
+            newWeather.lowTemp = tempDict["temp_min"] as? Float
+        }else{
+            newWeather.highTemp = 110
+            newWeather.lowTemp = 10
+        }
+        if let weatherDict = jsonDict["weather"] as? [[ String : AnyObject ]]{
+            newWeather.desc = weatherDict[0]["main"] as? String
             newWeather.icon = weatherDict[0]["icon"] as? String
         }
         if let timeResult = (jsonDict["dt"] as? Double) {
@@ -51,10 +73,10 @@ struct WebServiceManager {
                 //Processing code goes here
                 var WeatherList = [Weather]()
                 do{
-                    if let jsonResultsObj : AnyObject = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments) as? AnyObject {
+                    if let jsonResultsObj : AnyObject = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments) {
                         if let forecastList = jsonResultsObj["list"] as? [ [String : AnyObject] ]{
                             for jsonDict in forecastList {
-                                let newWeather = self.parseWeather(jsonDict)
+                                let newWeather = self.parseForecast(jsonDict)
                                 WeatherList.append(newWeather)
                             }
                             callback(WeatherList)
@@ -86,13 +108,9 @@ struct WebServiceManager {
             }
             if err == nil {
                 do{
-                    if let jsonDictArray : [ [String : AnyObject] ] = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments) as? [ [String : AnyObject] ] {
-                        
-                        for jsonDict in jsonDictArray{
-                            let newWeather = self.parseWeather(jsonDict)
-                            callback(newWeather)
-                        }
-                       
+                    if let jsonResultsDict : [String : AnyObject] = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments) as? [String : AnyObject] {
+                        let newWeather = self.parseWeather(jsonResultsDict)
+                        callback(newWeather)
                     }
                 }
                 catch{

@@ -35,6 +35,15 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
         }
         wsm.fetchWeather({(newWeather) -> Void in
             self.todayWeather = newWeather
+            self.dayDateLabel.text = self.todayWeather?.day
+            self.dayDescLabel.text = self.todayWeather?.desc
+            if let lowTemp = self.todayWeather?.lowTemp{
+                self.dayLowTempLabel.text = "\(lowTemp)"
+            }
+            if let highTemp = self.todayWeather?.highTemp{
+                self.dayHighTempLabel.text = "\(highTemp)"
+            }
+            
         })
     }
 
