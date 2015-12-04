@@ -31,6 +31,7 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
             for forecast in newForecasts{
                 self.forecasts?.append(forecast)
             }
+            self.tableView.reloadData()
         }
         wsm.fetchWeather({(newWeather) -> Void in
             self.todayWeather = newWeather

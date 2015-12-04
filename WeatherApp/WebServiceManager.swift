@@ -20,9 +20,10 @@ struct WebServiceManager {
             newWeather.highTemp = 110
             newWeather.lowTemp = 10
         }
-        if let weatherDict = jsonDict["weather"] as? [String: AnyObject]{
-            newWeather.desc = weatherDict["rain"] as? String
-            newWeather.icon = weatherDict["icon"] as? String
+        print(jsonDict)
+        if let weatherDict = jsonDict["weather"] as? [[ String : AnyObject ]]{
+            newWeather.desc = weatherDict[0]["description"] as? String
+            newWeather.icon = weatherDict[0]["icon"] as? String
         }
         if let timeResult = (jsonDict["dt"] as? Double) {
             let dateObj = NSDate(timeIntervalSince1970: timeResult)
