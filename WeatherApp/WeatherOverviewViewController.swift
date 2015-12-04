@@ -69,7 +69,7 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
             cell.cellDescLabel.text = forecast.desc
             cell.cellHighTempLabel.text = "\(forecast.highTemp!)º"
             cell.cellLowTempLabel.text = "\(forecast.lowTemp!)º"
-            cell.cellIconImageView.image = UIImage(named: forecast.icon!)
+            cell.cellIconImageView.image = UIImage(named: "\(forecast.icon!)-icon")
             
         }
         

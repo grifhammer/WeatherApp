@@ -37,7 +37,7 @@ struct WebServiceManager {
     private func parseWeather(jsonDict : [String : AnyObject] ) -> Weather {
         var newWeather = Weather()
         if let tempDict = jsonDict["main"] as? [ String: AnyObject ]{
-            newWeather.highTemp = tempDict["temp_max"] as? Float
+            newWeather.highTemp = tempDict["temp"] as? Float
             newWeather.lowTemp = tempDict["temp_min"] as? Float
         }else{
             newWeather.highTemp = 110
