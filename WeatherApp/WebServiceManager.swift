@@ -25,10 +25,25 @@ struct WebServiceManager {
             newWeather.icon = weatherDict[0]["icon"] as? String
         }
         if let timeResult = (jsonDict["dt"] as? Double) {
-            let dateObj = NSDate(timeIntervalSince1970: timeResult)
-            let dateFormatter : NSDateFormatter = NSDateFormatter()
-            dateFormatter.dateFormat = "MMM dd"
-            newWeather.day = dateFormatter.stringFromDate(dateObj)
+            
+            let jsonDateObj = NSDate(timeIntervalSince1970: timeResult)
+            let hourInSeconds :Double = 60 * 60
+            let dayInSeconds : Double = hourInSeconds * 24
+            let numericDateFormatter : NSDateFormatter = NSDateFormatter()
+            numericDateFormatter.dateFormat = "dd"
+            let todayDate = NSDate()
+            let tomorrowDate = NSDate(timeInterval: dayInSeconds, sinceDate: todayDate)
+            if( numericDateFormatter.stringFromDate(todayDate) == numericDateFormatter.stringFromDate(jsonDateObj)){
+                newWeather.day = "Today"
+            }
+            else if( numericDateFormatter.stringFromDate( jsonDateObj ) ==  numericDateFormatter.stringFromDate(tomorrowDate) ){
+                newWeather.day = "Tomorrow"
+            }
+            else{
+                let dateFormatter : NSDateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = "EEEE"
+                newWeather.day = dateFormatter.stringFromDate(jsonDateObj)
+            }
         }
         return newWeather
         
@@ -79,7 +94,11 @@ struct WebServiceManager {
                                 let newWeather = self.parseForecast(jsonDict)
                                 WeatherList.append(newWeather)
                             }
-                            callback(WeatherList)
+                            
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                 callback(WeatherList)
+                            })
+                           
                         }
                     }
                 }
@@ -96,7 +115,7 @@ struct WebServiceManager {
         task.resume()
     }
     
-    func fetchWeather(callback : (Weather) -> Void){
+    func fetchWeather(callback : (Weather?) -> Void){
         let url = NSURL(string: "http://api.openweathermap.org/data/2.5/weather?q=Atlanta&units=imperial&APPID=1d04e62091eabb4695bb6e9993976418")
         let request = NSURLRequest(URL: url!)
         
@@ -110,11 +129,14 @@ struct WebServiceManager {
                 do{
                     if let jsonResultsDict : [String : AnyObject] = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments) as? [String : AnyObject] {
                         let newWeather = self.parseWeather(jsonResultsDict)
-                        callback(newWeather)
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+
+                            callback(newWeather)
+                        })
                     }
                 }
                 catch{
-                    callback(Weather())
+                    callback(nil)
                 }
             }
             else{

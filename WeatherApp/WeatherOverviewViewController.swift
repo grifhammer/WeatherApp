@@ -35,14 +35,15 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
         }
         wsm.fetchWeather({(newWeather) -> Void in
             self.todayWeather = newWeather
-            self.dayDateLabel.text = self.todayWeather?.day
+            self.dayDateLabel.text = "Today, \((self.todayWeather?.day)!)"
             self.dayDescLabel.text = self.todayWeather?.desc
             if let lowTemp = self.todayWeather?.lowTemp{
-                self.dayLowTempLabel.text = "\(lowTemp)"
+                self.dayLowTempLabel.text = "\(Int(lowTemp))º"
             }
             if let highTemp = self.todayWeather?.highTemp{
-                self.dayHighTempLabel.text = "\(highTemp)"
+                self.dayHighTempLabel.text = "\(Int(highTemp))º"
             }
+            self.dayIconImageView.image = UIImage(named: "\(self.todayWeather!.icon!)")
             
         })
     }
@@ -67,9 +68,10 @@ class WeatherOverviewViewController: UIViewController, UITableViewDataSource {
         if let cell = tableView.dequeueReusableCellWithIdentifier("forecastCellReuseID", forIndexPath: indexPath) as? ForecastTableViewCell{
             cell.cellDayLabel.text = forecast.day
             cell.cellDescLabel.text = forecast.desc
-            cell.cellHighTempLabel.text = "\(forecast.highTemp!)º"
-            cell.cellLowTempLabel.text = "\(forecast.lowTemp!)º"
+            cell.cellHighTempLabel.text = "\(Int(forecast.highTemp!))º"
+            cell.cellLowTempLabel.text = "\(Int(forecast.lowTemp!))º"
             cell.cellIconImageView.image = UIImage(named: "\(forecast.icon!)-icon")
+            return cell
             
         }
         
